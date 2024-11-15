@@ -1,28 +1,31 @@
 import cv2
 
-# Initialize the camera (usually 0 for the default webcam)
-cap = cv2.VideoCapture(0)
+# Initialise la caméra
+CAMERA = cv2.VideoCapture(0)
 
-if not cap.isOpened():
-    print("Error: Could not open camera.")
+if not CAMERA.isOpened():
+    print("Erreur : Impossible d'ouvrir la caméra.")
     exit()
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
+while True:  # This loop continuously captures and displays frames.
+    ret, frame = CAMERA.read()  # Captures a frame from the camera.
 
-    if not ret:
-        print("Error: Could not read frame.")
+    if not ret:  # Checks if the frame was captured successfully.
+        print("Erreur : Impossible de lire l'image.")
         break
 
-    # Display the resulting frame
-    cv2.imshow('Webcam Feed', frame)
+    # Définir la taille de la fenêtre de capture (format 1:1)
+    height, width, _ = frame.shape  # Gets the height and width of the captured frame.
+    min_dimension = min(height, width)  # Determines the smaller dimension (either height or width).  This will be the side length of our square.
+    x = (width - min_dimension) // 2  # Calculates the x-offset for cropping.  This centers the square horizontally.
+    y = (height - min_dimension) // 2  # Calculates the y-offset for cropping. This centers the square vertically.
+    cropped_frame = frame[y:y+min_dimension, x:x+min_dimension] # Crops the frame to a square.
 
-    # Break the loop if 'q' is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    # Affiche l'image
+    cv2.imshow('Flux de la Webcam', cropped_frame) # Displays the *cropped* frame.
 
-# Release the capture and destroy windows
-cap.release()
-cv2.destroyAllWindows()
+    if cv2.waitKey(1) & 0xFF == ord('q'):  # Checks if the 'q' key was pressed.
+        break  # Exits the loop if 'q' is pressed.
 
+CAMERA.release() # Releases the camera.
+cv2.destroyAllWindows()  # Closes the display window.
